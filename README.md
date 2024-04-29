@@ -1,5 +1,35 @@
 # Any
 
+This is an enhanced version of [kocienda/Any](https://github.com/kocienda/Any), which supports move only types (such as `std::unique_ptr`).
+
+Usage example:
+```cpp
+auto a1 = Cyto::make_move_only_any<std::unique_ptr<int>>();
+auto a2 = Cyto::make_move_only_any<std::unique_ptr<int>>(std::make_unique<int>(123));
+auto a3 = Cyto::MoveOnlyAny(std::unique_ptr<int>{});
+auto a4 = Cyto::MoveOnlyAny(std::unique_ptr<int>{std::make_unique<int>(233)});
+Cyto::MoveOnlyAny a5 = std::unique_ptr<int>{};
+Cyto::MoveOnlyAny a6 = std::make_unique<int>(666);
+
+auto &p1 = Cyto::any_cast<std::unique_ptr<int> &>(a1);
+auto &p2 = Cyto::any_cast<std::unique_ptr<int> &>(a2);
+auto &p3 = Cyto::any_cast<std::unique_ptr<int> &>(a3);
+auto &p4 = Cyto::any_cast<std::unique_ptr<int> &>(a4);
+auto &p5 = Cyto::any_cast<std::unique_ptr<int> &>(a5);
+auto &p6 = Cyto::any_cast<std::unique_ptr<int> &>(a6);
+
+assert(p1.get() == nullptr);
+assert(p3.get() == nullptr);
+assert(p5.get() == nullptr);
+assert(*p2 == 123);
+assert(*p4 == 233);
+assert(*p6 == 666);
+```
+
+Below are the original README.
+
+## Introduction
+
 <a name=”introduction”></a>
 I’m fascinated by C++ [`std::any`](https://en.cppreference.com/w/cpp/utility/any), and by the prospect of using a strongly-typed language to create a class to hold values of any type. This document and the code in this repository describes my investigations into making an “Any” class of my own, one that runs faster than the standard library implementations of `std::any` in the [LLVM/libcxx](https://github.com/llvm-mirror/libcxx/blob/master/include/any) and [GCC/libstdc++](https://github.com/gcc-mirror/gcc/blob/master/libstdc%2B%2B-v3/include/std/any) projects. I started my work by reading through theirs, and I learned a lot by studying the experts.
 
